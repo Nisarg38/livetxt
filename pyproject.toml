@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "livetxt"
+version = "0.1.0"
+description = "A Python package for live text processing"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"}
+authors = [
+    {name = "nisarg38", email = "nisarg38@gmail.com"},
+]
+keywords = ["text", "processing", "live"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/nisarg38/livetxt"
+Repository = "https://github.com/nisarg38/livetxt"
+Issues = "https://github.com/nisarg38/livetxt/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["livetxt*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py37']
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
