@@ -2,7 +2,7 @@
 livetxt - A Python package for live text processing
 """
 
-__version__ = "0.1.0"
+__version__ = "0.0.0"
 __author__ = "nisarg38"
 __email__ = "nisarg38@gmail.com"
 
