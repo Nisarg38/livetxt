@@ -1,6 +1,6 @@
-# LiveTxt
+# LiveTxt: Run LiveKit Agents with SMS, Chat, and API Channels
 
-Run your existing LiveKit agents across channels without changing your agent code. LiveKit powers real-time voice and video. LiveTxt powers chat, SMS, and API-driven text. Same agent logic, different runtimes.
+Run your existing **LiveKit agents** across any text channel (like **SMS**, chat, or API) without modifying your agent code. **LiveTxt** extends **LiveKit**'s real-time voice and video capabilities to text, enabling channel-agnostic **AI agents** for **SMS** and other messaging platforms. Enjoy drop-in compatibility with `livekit-agents`.
 
 - Channel-agnostic by design (voice/video via LiveKit, text/API via LiveTxt)
 - Drop-in compatibility with livekit-agents (no agent rewrites)
