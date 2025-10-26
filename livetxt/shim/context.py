@@ -18,12 +18,22 @@ class FakeParticipant:
         self.sid = f"PA_sms_{identity}"
         self.metadata = metadata
         self.kind = "standard"
+        self.attributes = {}  # Agent attributes (needed by AgentSession)
 
     async def publish_data(self, data: bytes, *, topic: str = "", reliable: bool = True) -> None:
         """Intercept data publishing - this will be handled by FakeRoom."""
         # This is called by the agent when it wants to send a message
         # The FakeRoom will intercept this
         pass
+
+    async def set_attributes(self, attributes: dict) -> None:
+        """Set participant attributes (needed by AgentSession)."""
+        self.attributes.update(attributes)
+        logger.debug(f"FakeParticipant.set_attributes: {attributes}")
+
+    def get(self, key: str, default=None):
+        """Get attribute value."""
+        return self.attributes.get(key, default)
 
 
 class FakeRoom:
@@ -72,6 +82,10 @@ class FakeRoom:
         """Get remote participants."""
         return {self._remote_participant.identity: self._remote_participant}
 
+    def isconnected(self) -> bool:
+        """Return connection status. Always True in SMS mode."""
+        return True
+
     def on(self, event: str, callback: Callable | None = None) -> Callable | None:
         """Register an event handler."""
         if callback is None:
@@ -85,6 +99,18 @@ class FakeRoom:
             # Direct usage
             self._register_handler(event, callback)
             return callback
+
+    def off(self, event: str, callback: Callable | None = None) -> None:
+        """Unregister an event handler."""
+        if event not in self._event_handlers:
+            return
+        if callback is None:
+            # Remove all handlers for this event
+            self._event_handlers[event] = []
+        else:
+            # Remove specific handler
+            if callback in self._event_handlers[event]:
+                self._event_handlers[event].remove(callback)
 
     def _register_handler(self, event: str, callback: Callable) -> None:
         """Register an event handler."""
@@ -119,6 +145,30 @@ class FakeRoom:
     async def disconnect(self) -> None:
         """Fake disconnection."""
         logger.info(f"Agent disconnecting from room {self.name}")
+
+    def register_byte_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("register_byte_stream_handler called (no-op in SMS mode)")
+
+    def register_text_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("register_text_stream_handler called (no-op in SMS mode)")
+
+    def register_audio_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("register_audio_stream_handler called (no-op in SMS mode)")
+
+    def unregister_byte_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("unregister_byte_stream_handler called (no-op in SMS mode)")
+
+    def unregister_text_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("unregister_text_stream_handler called (no-op in SMS mode)")
+
+    def unregister_audio_stream_handler(self, *args: Any, **kwargs: Any) -> None:
+        """Fake method - not needed in SMS mode."""
+        logger.debug("unregister_audio_stream_handler called (no-op in SMS mode)")
 
     async def _inject_initial_message(self) -> None:
         """Inject the initial SMS message as a data_received event."""
