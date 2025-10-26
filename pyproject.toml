@@ -8,12 +8,12 @@ version = "0.0.1"
 description = "Run LiveKit agents in text-only, stateless mode for SMS and chat"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
+license = {text = "AGPL-3.0"}
 authors = [
     {name = "Livetxt", email = "nisarg38@gmail.com"}
 ]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
 ]
