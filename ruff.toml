@@ -1,0 +1,41 @@
+# Ruff configuration for LiveTxt
+# See https://docs.astral.sh/ruff/configuration/
+
+line-length = 100
+target-version = "py310"
+
+[lint]
+# Enable specific rule sets
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+]
+
+# Ignore specific rules
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "N806",  # allow underscore-prefixed uppercase variables (e.g., _OriginalAgentSession)
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["E501", "F401", "F811"]  # Allow longer lines and unused imports in tests
+"**/__init__.py" = ["F401"]  # Allow unused imports in __init__ files
+
+[lint.isort]
+known-first-party = ["livetxt"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
