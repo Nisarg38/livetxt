@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Fake LiveKit context objects for SMS mode."""
 
 import asyncio

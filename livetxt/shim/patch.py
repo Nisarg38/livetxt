@@ -22,7 +22,7 @@ def patch_livekit() -> None:
     if _PATCHING_APPLIED:
         logger.debug("LiveKit SDK already patched, skipping")
         return
-    
+
     try:
         from livekit import agents
         from livekit.agents.voice import generation
@@ -52,7 +52,7 @@ def patch_livekit() -> None:
                     logger.warning(f"Error initializing AgentSession: {e}")
                     # Try without STT/TTS
                     super().__init__(*args, stt=None, tts=None, **kwargs)
-            
+
             def emit(self, event_name: str, *args: Any, **kwargs: Any) -> Any:
                 """
                 Override emit to skip TTS-related events in text-only mode.
@@ -61,7 +61,7 @@ def patch_livekit() -> None:
                 if event_name in ('speech_created', 'speech_started', 'speech_done'):
                     logger.debug(f"Skipping TTS event in text-only mode: {event_name}")
                     return None
-                
+
                 return super().emit(event_name, *args, **kwargs)
 
         # Note: TTS errors occur but don't break functionality
@@ -70,7 +70,7 @@ def patch_livekit() -> None:
         # Replace AgentSession
         agents.AgentSession = SMSAgentSession  # type: ignore
         logger.info("✅ LiveKit SDK patched for SMS mode")
-        
+
         _PATCHING_APPLIED = True
 
     except ImportError:

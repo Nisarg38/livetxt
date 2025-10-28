@@ -288,13 +288,13 @@ async def execute_job(
         def _set_captured_agent(agent):
             nonlocal captured_agent
             captured_agent = agent
-        
+
         def _set_captured_session(session):
             nonlocal captured_session
             captured_session = session
-        
+
         cleanup_hook = _install_agent_session_hooks(
-            output_buffer, 
+            output_buffer,
             _set_captured_agent,
             _set_captured_session
         )
@@ -354,7 +354,7 @@ async def execute_job(
                 logger.info(f"Agent has chat_ctx: {chat_ctx}")
                 logger.info(f"chat_ctx type: {type(chat_ctx)}")
                 logger.info(f"chat_ctx dir: {[x for x in dir(chat_ctx) if not x.startswith('_')]}")
-                
+
                 # ChatContext uses 'items' not 'messages'
                 if chat_ctx:
                     items = chat_ctx.items if hasattr(chat_ctx, 'items') else []
@@ -450,7 +450,7 @@ async def execute_job(
 
 
 def _install_agent_session_hooks(
-    output_buffer: list[str], 
+    output_buffer: list[str],
     on_agent_captured: Callable,
     on_session_captured: Callable
 ) -> Callable:
@@ -480,19 +480,19 @@ def _install_agent_session_hooks(
         """Patched start method that hooks into conversation events."""
         # Capture the session reference
         on_session_captured(self)
-        
+
         # Extract agent from args/kwargs
         agent = kwargs.get("agent") if "agent" in kwargs else (args[0] if args else None)
 
         if agent:
             # Capture the agent reference
             on_agent_captured(agent)
-            
+
             # Replace RealtimeModel with text-based LLM for text-only mode
             is_text_based_llm = False
             if hasattr(agent, 'llm') and agent.llm is not None:
                 llm_type = type(agent.llm).__name__
-                
+
                 # Check if it's a RealtimeModel (voice-based)
                 if 'realtime' in llm_type.lower() or 'RealtimeModel' in llm_type:
                     logger.warning(
@@ -502,7 +502,7 @@ def _install_agent_session_hooks(
                     try:
                         from livekit.plugins import openai
                         # Replace with text-based model
-                        agent._llm = openai.LLM(model="gpt-5-mini")    
+                        agent._llm = openai.LLM(model="gpt-5-mini")
                         is_text_based_llm = True
                         logger.info("Successfully replaced RealtimeModel with text-based LLM")
                     except Exception as e:
@@ -511,7 +511,7 @@ def _install_agent_session_hooks(
                 else:
                     # Already a text-based LLM
                     is_text_based_llm = 'LLM' in llm_type and 'Realtime' not in llm_type
-            
+
             # Store flag on session for later use
             self._livetxt_use_run_method = is_text_based_llm
 

@@ -10,7 +10,7 @@ from typing import Any
 from urllib.parse import urlencode, urlparse, urlunparse
 
 import websockets
-from websockets.client import WebSocketClientProtocol
+from websockets.asyncio.client import ClientConnection
 
 from .config import LiveTxtConfig
 
@@ -25,7 +25,7 @@ class LiveTxtClient:
 
     def __init__(self, config: LiveTxtConfig):
         self.config = config
-        self.ws: WebSocketClientProtocol | None = None
+        self.ws: ClientConnection | None = None
         self.worker_id: str | None = None
         self._message_handler: MessageHandler | None = None
         self._running = False
