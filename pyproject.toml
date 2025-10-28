@@ -7,7 +7,7 @@ name = "livetxt"
 version = "0.0.1"
 description = "Run LiveKit agents in text-only, stateless mode for SMS and chat"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 license = {text = "AGPL-3.0"}
 authors = [
     {name = "Livetxt", email = "nisarg38@gmail.com"}
