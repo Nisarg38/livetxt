@@ -104,32 +104,77 @@ def create_app() -> FastAPI:
                 error=f"Agent creation failed: {str(e)}"
             )
 
-        # Minimal processing: inject user message and a simple echo response
+        # Process message through agent's LLM
         try:
             from livekit.agents import llm
 
-            if hasattr(agent, "chat_ctx") and agent.chat_ctx is not None:
-                # Add user message
-                agent.chat_ctx.add_message(
-                    llm.ChatMessage(role="user", content=[{"type": "text", "text": req.message}])
+            if not hasattr(agent, "chat_ctx") or agent.chat_ctx is None:
+                logger.error("Agent does not have chat_ctx initialized")
+                return SimpleExecuteResponse(
+                    request_id=req.request_id,
+                    status="error",
+                    error="Agent chat_ctx not initialized"
                 )
 
-                # Create a simple echo response (placeholder for real LLM processing)
-                reply_text = f"You said: {req.message}"
+            # Add user message
+            agent.chat_ctx.add_message(
+                llm.ChatMessage(role="user", content=[{"type": "text", "text": req.message}])
+            )
+            logger.debug(f"Added user message: {req.message[:50]}...")
+
+            # Run LLM to get response
+            if not hasattr(agent, "llm") or agent.llm is None:
+                # Fallback if no LLM configured
+                reply_text = f"Echo: {req.message}"
+                logger.warning("No LLM configured, using echo response")
+            else:
+                # Run LLM chat completion
+                try:
+                    # Build messages for LLM from chat context
+                    messages = agent.chat_ctx.to_dict().get("items", [])
+                    
+                    # Call LLM
+                    response_stream = agent.llm.chat(
+                        chat_ctx=agent.chat_ctx,
+                    )
+                    
+                    # Collect response
+                    reply_text = ""
+                    async for chunk in response_stream:
+                        if chunk.choices and len(chunk.choices) > 0:
+                            delta = chunk.choices[0].delta
+                            if delta.content:
+                                reply_text += delta.content
+                    
+                    logger.info(f"LLM response: {reply_text[:100]}...")
+                    
+                except Exception as llm_error:
+                    logger.error(f"LLM execution failed: {llm_error}", exc_info=True)
+                    return SimpleExecuteResponse(
+                        request_id=req.request_id,
+                        status="error",
+                        error=f"LLM execution failed: {str(llm_error)}"
+                    )
+
+            # Add assistant response to context
+            if reply_text:
                 agent.chat_ctx.add_message(
                     llm.ChatMessage(
                         role="assistant", content=[{"type": "text", "text": reply_text}]
                     )
                 )
 
-                # Let auto-capture run when chat_ctx accessed
-                _ = agent.chat_ctx
-                response_text = reply_text
-            else:
-                response_text = f"You said: {req.message}"
+            # Trigger auto-capture by accessing chat_ctx
+            _ = agent.chat_ctx
+            response_text = reply_text
+            
         except Exception as e:
-            logger.warning(f"ChatContext manipulation failed: {e}")
-            response_text = f"You said: {req.message}"
+            logger.error(f"Message processing failed: {e}", exc_info=True)
+            return SimpleExecuteResponse(
+                request_id=req.request_id,
+                status="error",
+                error=f"Message processing failed: {str(e)}"
+            )
 
         # Collect state
         captured = get_agent_state(agent)
