@@ -55,7 +55,7 @@ class LoadAgentRequest(BaseModel):
     agent_class: str | None = Field(default=None, description="Optional agent class name")
 
 
-def create_app() -> FastAPI:
+def create_app(agent_file: str | None = None, agent_class: str | None = None) -> FastAPI:
     app = FastAPI(title="LiveTxt Worker", version="0.0.1")
 
     # Globals
@@ -65,6 +65,17 @@ def create_app() -> FastAPI:
     async def on_startup() -> None:
         patch_livekit_auto()
         logger.info("✅ LiveKit auto-patching applied")
+        
+        # Auto-load agent if provided
+        if agent_file:
+            try:
+                agent_cls = load_agent_from_file(agent_file, agent_class)
+                state["agent_class"] = agent_cls
+                state["agent_file"] = agent_file
+                logger.info(f"✅ Auto-loaded agent: {agent_cls.__name__} from {agent_file}")
+            except Exception as e:
+                logger.error(f"❌ Failed to auto-load agent: {e}")
+                raise
 
     @app.post("/load_agent")
     async def load_agent(agent_file: str, agent_class: str | None = None) -> dict[str, Any]:
@@ -116,10 +127,10 @@ def create_app() -> FastAPI:
                     error="Agent chat_ctx not initialized"
                 )
 
-            # Add user message
-            agent.chat_ctx.add_message(
-                llm.ChatMessage(role="user", content=[{"type": "text", "text": req.message}])
-            )
+            # Copy chat context (it's read-only), add user message, then update agent
+            chat_ctx = agent.chat_ctx.copy()
+            chat_ctx.add_message(role="user", content=req.message)
+            await agent.update_chat_ctx(chat_ctx)
             logger.debug(f"Added user message: {req.message[:50]}...")
 
             # Run LLM to get response
@@ -130,21 +141,13 @@ def create_app() -> FastAPI:
             else:
                 # Run LLM chat completion
                 try:
-                    # Build messages for LLM from chat context
-                    messages = agent.chat_ctx.to_dict().get("items", [])
+                    # Call LLM with chat context
+                    response_stream = agent.llm.chat(chat_ctx=agent.chat_ctx)
                     
-                    # Call LLM
-                    response_stream = agent.llm.chat(
-                        chat_ctx=agent.chat_ctx,
-                    )
-                    
-                    # Collect response
+                    # Collect response using to_str_iterable() for simple text
                     reply_text = ""
-                    async for chunk in response_stream:
-                        if chunk.choices and len(chunk.choices) > 0:
-                            delta = chunk.choices[0].delta
-                            if delta.content:
-                                reply_text += delta.content
+                    async for text_chunk in response_stream.to_str_iterable():
+                        reply_text += text_chunk
                     
                     logger.info(f"LLM response: {reply_text[:100]}...")
                     
@@ -156,13 +159,11 @@ def create_app() -> FastAPI:
                         error=f"LLM execution failed: {str(llm_error)}"
                     )
 
-            # Add assistant response to context
+            # Add assistant response to context using copy() and update_chat_ctx()
             if reply_text:
-                agent.chat_ctx.add_message(
-                    llm.ChatMessage(
-                        role="assistant", content=[{"type": "text", "text": reply_text}]
-                    )
-                )
+                chat_ctx = agent.chat_ctx.copy()
+                chat_ctx.add_message(role="assistant", content=reply_text)
+                await agent.update_chat_ctx(chat_ctx)
 
             # Trigger auto-capture by accessing chat_ctx
             _ = agent.chat_ctx

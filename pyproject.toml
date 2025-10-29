@@ -29,10 +29,14 @@ dependencies = [
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-anyio>=0.0.0",
     "pytest-cov>=4.0.0",
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
+]
+openai = [
+    "livekit-plugins-openai>=1.2.0",
 ]
 
 [tool.setuptools.packages.find]

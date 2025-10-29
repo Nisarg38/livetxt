@@ -28,7 +28,31 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-## Quick start
+## Quick start: HTTP Worker
+
+The easiest way to run an agent is with the built-in HTTP server that **auto-loads** your agent:
+
+```bash
+# Start worker (agent auto-loads on startup)
+python -m livetxt.cli serve examples/weather-agent/weather_agent.py --port 8081
+
+# Agent is ready to receive requests - no manual loading needed!
+```
+
+Then send requests from the gateway or directly:
+
+```bash
+curl -X POST http://localhost:8081/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "request_id": "req_1",
+    "session_id": "session_1",
+    "user_id": "user_1",
+    "message": "What's the weather?"
+  }'
+```
+
+## Quick start: Programmatic
 
 Define your agent exactly as you do for livekit-agents, then execute it with a user message.
 

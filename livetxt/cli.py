@@ -279,18 +279,12 @@ def serve(agent_file: str, host: str, port: int, agent_class: str | None, log_le
 
     from .http_server import create_app
 
-    # Create app and pre-load agent via startup request after server starts
-    app = create_app()
+    # Create app with agent file and class so it can auto-load on startup
+    app = create_app(agent_file=agent_file, agent_class=agent_class)
 
     click.echo(f"🚀 Starting LiveTxt Worker on {host}:{port}")
     click.echo(f"📦 Agent file: {agent_file}")
-
-    # We cannot call /load_agent before server starts, so rely on gateway to call it,
-    # or document a curl call; for local testing we log instructions.
-    click.echo("ℹ️  After server starts, load the agent with:")
-    click.echo(
-        f"   curl -X POST 'http://{host}:{port}/load_agent?agent_file={agent_file}&agent_class={agent_class or ''}'"
-    )
+    click.echo("✅ Agent will be loaded automatically on startup")
 
     uvicorn.run(app, host=host, port=port, log_level=log_level)
 

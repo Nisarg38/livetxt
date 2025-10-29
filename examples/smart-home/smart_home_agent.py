@@ -104,11 +104,15 @@ async def entrypoint(ctx: JobContext):
 
 if __name__ == "__main__":
     ## Run with LiveKit CLI (Voice Mode) ##
-    cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
+    # cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
 
     ### Run with LiveTxt CLI (SMS Mode) ###
     ## Set these environment variables: ##
     ## export LIVETXT_GATEWAY_URL=http://localhost:8000 ##
     ## export LIVETXT_API_KEY=sk_live_1234567890 ##
-    livetxt_cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
+    livetxt_cli.run_app(WorkerOptions(
+        entrypoint_fnc=entrypoint,
+        ws_url="http://localhost:8000",
+        api_key="test_key_123"
+    ))
 
