@@ -164,10 +164,12 @@ class TestErrorHandling:
     @pytest.mark.anyio
     async def test_timeout_handling(self):
         """Test that long-running agents timeout properly."""
+        import asyncio
         from livekit.agents import JobContext
         
         async def slow_agent(ctx: JobContext):
             """Agent that takes too long."""
+            import asyncio  # Import inside function for isolated execution
             await asyncio.sleep(100)  # Way longer than timeout
         
         request = JobRequest(

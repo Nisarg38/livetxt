@@ -171,6 +171,8 @@ async def test_parallel_agents():
             )
     
     async def entrypoint(ctx: JobContext):
+        import asyncio  # Import for isolated execution
+        
         # Create both agents
         agent1 = GreetingAgent()
         agent2 = WeatherAgent()

@@ -1,5 +1,7 @@
 """Fake LiveKit context objects for SMS mode."""
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging

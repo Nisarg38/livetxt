@@ -28,7 +28,31 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-## Quick start
+## Quick start: HTTP Worker
+
+The easiest way to run an agent is with the built-in HTTP server that **auto-loads** your agent:
+
+```bash
+# Start worker (agent auto-loads on startup)
+python -m livetxt.cli serve examples/weather-agent/weather_agent.py --port 8081
+
+# Agent is ready to receive requests - no manual loading needed!
+```
+
+Then send requests from the gateway or directly:
+
+```bash
+curl -X POST http://localhost:8081/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "request_id": "req_1",
+    "session_id": "session_1",
+    "user_id": "user_1",
+    "message": "What's the weather?"
+  }'
+```
+
+## Quick start: Programmatic
 
 Define your agent exactly as you do for livekit-agents, then execute it with a user message.
 
@@ -112,13 +136,24 @@ pytest --cov=livetxt --cov-report=term tests/
 - Byte/str issues? Encode/decode UTF‑8 around `publish_data()` and handler inputs.
 - State not sticking? Always pass `result.updated_state` into the next `JobRequest`.
 
-## Contributing
+## Development
 
-See `DEVELOPMENT.md` for development setup, architecture notes, and testing guidelines. Before opening a PR, run:
+Contributions are welcome! To set up for development:
 
 ```bash
-black livetxt/ && ruff check --fix livetxt/ && mypy livetxt/
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest tests/ -v
+
+# Run linting
+ruff check --fix livetxt/
+black livetxt/
+mypy livetxt/
 ```
+
+See `tests/README.md` for testing guidelines and `WARP.md` for architecture notes.
 
 ## License
 
