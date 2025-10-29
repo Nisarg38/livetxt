@@ -26,7 +26,7 @@ _CURRENT_CONTEXT: dict[str, Any] = {}
 def set_execution_context(context: dict[str, Any]) -> None:
     """
     Set context for current execution.
-    
+
     This is called by the worker before running an agent to provide
     previous state and user context.
     """
@@ -218,7 +218,7 @@ def _wrap_function_tools(agent: Any) -> None:
 def patch_livekit_auto() -> None:
     """
     Apply automatic monkey-patches to livekit-agents.
-    
+
     This makes state capture and restoration completely transparent.
     User code requires ZERO changes.
     """
@@ -254,7 +254,7 @@ def patch_livekit_auto() -> None:
 def install_agent_hooks(agent: Any) -> None:
     """
     Install hooks on a specific agent instance after creation.
-    
+
     This is called after agent is instantiated to wrap function tools.
     """
     try:

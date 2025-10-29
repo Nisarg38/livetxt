@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "livetxt"
-version = "0.0.1"
+version = "0.0.2"
 description = "Run LiveKit agents in text-only, stateless mode for SMS and chat"
 readme = "README.md"
 requires-python = ">=3.9"

@@ -361,9 +361,8 @@ async def execute_job(
                     logger.info(f"Chat context has {len(items)} items")
                     for item in items:
                         logger.info(f"  Item role={getattr(item, 'role', None)}, type={type(item)}")
-                        if hasattr(item, 'role') and item.role == 'assistant':
+                        if hasattr(item, 'role') and item.role == 'assistant' and hasattr(item, 'content'):
                             # Extract assistant message
-                            if hasattr(item, 'content'):
                                 content = item.content
                                 logger.info(f"  Assistant content type: {type(content)}")
                                 if isinstance(content, str):

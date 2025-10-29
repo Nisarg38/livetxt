@@ -136,13 +136,24 @@ pytest --cov=livetxt --cov-report=term tests/
 - Byte/str issues? Encode/decode UTF‑8 around `publish_data()` and handler inputs.
 - State not sticking? Always pass `result.updated_state` into the next `JobRequest`.
 
-## Contributing
+## Development
 
-See `DEVELOPMENT.md` for development setup, architecture notes, and testing guidelines. Before opening a PR, run:
+Contributions are welcome! To set up for development:
 
 ```bash
-black livetxt/ && ruff check --fix livetxt/ && mypy livetxt/
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest tests/ -v
+
+# Run linting
+ruff check --fix livetxt/
+black livetxt/
+mypy livetxt/
 ```
+
+See `tests/README.md` for testing guidelines and `WARP.md` for architecture notes.
 
 ## License
 

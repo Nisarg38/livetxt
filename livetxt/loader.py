@@ -1,11 +1,11 @@
-from __future__ import annotations
-
 """
 Automatic agent discovery and loading.
 
 This module loads user's agent files and automatically finds Agent classes
 without requiring any specific exports or naming conventions.
 """
+
+from __future__ import annotations
 
 import importlib.util
 import inspect
@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 def load_module_from_file(file_path: str | Path) -> Any:
     """
     Dynamically load a Python module from a file path.
-    
+
     Args:
         file_path: Path to the Python file
-        
+
     Returns:
         The loaded module
-        
+
     Raises:
         ImportError: If the file cannot be loaded
     """
@@ -63,10 +63,10 @@ def load_module_from_file(file_path: str | Path) -> Any:
 def find_agent_classes(module: Any) -> list[type]:
     """
     Find all Agent subclasses in a module.
-    
+
     Args:
         module: The module to search
-        
+
     Returns:
         List of Agent classes found
     """
@@ -98,15 +98,15 @@ def find_agent_classes(module: Any) -> list[type]:
 def load_agent_from_file(file_path: str | Path, agent_class_name: str | None = None) -> type:
     """
     Load an Agent class from a file.
-    
+
     Args:
         file_path: Path to the Python file containing the agent
         agent_class_name: Optional specific class name to load.
                          If None, will auto-discover and use the first Agent found.
-        
+
     Returns:
         The Agent class
-        
+
     Raises:
         ValueError: If no Agent class is found or if specified class is not found
     """
@@ -155,11 +155,11 @@ def load_agent_from_file(file_path: str | Path, agent_class_name: str | None = N
 def create_agent_instance(agent_class: type, **kwargs: Any) -> Any:
     """
     Create an instance of an agent class.
-    
+
     Args:
         agent_class: The Agent class to instantiate
         **kwargs: Additional arguments to pass to the constructor
-        
+
     Returns:
         The agent instance
     """
@@ -179,12 +179,12 @@ def load_and_create_agent(
 ) -> Any:
     """
     Convenience function to load and instantiate an agent in one step.
-    
+
     Args:
         file_path: Path to the Python file containing the agent
         agent_class_name: Optional specific class name to load
         **kwargs: Additional arguments to pass to the agent constructor
-        
+
     Returns:
         The agent instance
     """

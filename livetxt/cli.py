@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """CLI for LiveTxt runtime."""
+
+from __future__ import annotations
 
 import asyncio
 import importlib.util
@@ -113,7 +113,7 @@ def load_agent_entrypoint(agent_file: str):
 async def run_worker_with_agent_class(config: LiveTxtConfig, agent_class: type):
     """
     Run worker with an Agent class (automatic mode).
-    
+
     This creates an entrypoint wrapper that:
     1. Instantiates the agent class
     2. Automatically captures and restores state
@@ -196,21 +196,21 @@ def run(agent_file: str, gateway_url: str, api_key: str, agent_class: str | None
     Run an agent worker with ZERO code changes.
 
     AGENT_FILE is the path to your Python file containing a livekit.agents.Agent subclass.
-    
+
     Your agent code remains UNCHANGED - just write normal livekit-agents code:
-    
+
     \b
     # your_agent.py
     from livekit.agents import Agent
-    
+
     class MyAgent(Agent):
         def __init__(self):
             super().__init__(instructions="You are helpful")
-        
+
         @llm.function_tool()
         async def my_tool(self):
             return "result"
-    
+
     Then run: livetxt run your_agent.py
 
     Example:

@@ -65,7 +65,7 @@ def create_app(agent_file: str | None = None, agent_class: str | None = None) ->
     async def on_startup() -> None:
         patch_livekit_auto()
         logger.info("✅ LiveKit auto-patching applied")
-        
+
         # Auto-load agent if provided
         if agent_file:
             try:
@@ -87,7 +87,7 @@ def create_app(agent_file: str | None = None, agent_class: str | None = None) ->
             return {"status": "loaded", "agent_class": agent_cls.__name__}
         except Exception as e:
             logger.error(f"Failed to load agent: {e}")
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e)) from e
 
     @app.post("/execute", response_model=SimpleExecuteResponse)
     async def execute(req: SimpleExecuteRequest) -> SimpleExecuteResponse:
@@ -117,7 +117,6 @@ def create_app(agent_file: str | None = None, agent_class: str | None = None) ->
 
         # Process message through agent's LLM
         try:
-            from livekit.agents import llm
 
             if not hasattr(agent, "chat_ctx") or agent.chat_ctx is None:
                 logger.error("Agent does not have chat_ctx initialized")
@@ -143,14 +142,14 @@ def create_app(agent_file: str | None = None, agent_class: str | None = None) ->
                 try:
                     # Call LLM with chat context
                     response_stream = agent.llm.chat(chat_ctx=agent.chat_ctx)
-                    
+
                     # Collect response using to_str_iterable() for simple text
                     reply_text = ""
                     async for text_chunk in response_stream.to_str_iterable():
                         reply_text += text_chunk
-                    
+
                     logger.info(f"LLM response: {reply_text[:100]}...")
-                    
+
                 except Exception as llm_error:
                     logger.error(f"LLM execution failed: {llm_error}", exc_info=True)
                     return SimpleExecuteResponse(
@@ -168,7 +167,7 @@ def create_app(agent_file: str | None = None, agent_class: str | None = None) ->
             # Trigger auto-capture by accessing chat_ctx
             _ = agent.chat_ctx
             response_text = reply_text
-            
+
         except Exception as e:
             logger.error(f"Message processing failed: {e}", exc_info=True)
             return SimpleExecuteResponse(

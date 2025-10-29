@@ -25,7 +25,6 @@ def patch_livekit() -> None:
 
     try:
         from livekit import agents
-        from livekit.agents.voice import generation
 
         # Store original AgentSession
         _OriginalAgentSession = agents.AgentSession
